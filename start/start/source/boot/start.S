@@ -2,6 +2,7 @@
 .code16
 .text
 .global _start
+.extern boot_entry
 	
 _start:
 	mov $0, %ax
@@ -17,6 +18,7 @@ _start:
 	mov $'L', %al
 	int $0x10
 
+
 read_loader:
 	mov $0x8000, %bx
 	mov $0x2, %ah
@@ -26,6 +28,7 @@ read_loader:
 	int $0x13
 	jc read_loader
 
+	jmp boot_entry
 	jmp .
 	
 	
