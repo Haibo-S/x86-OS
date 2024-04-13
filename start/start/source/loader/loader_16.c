@@ -28,7 +28,7 @@ static void detect_memory(void) {
 	SMAP_entry_t smap_entry;
 	int signature, bytes;
 
-    show_msg("Trying to detect memory:");
+    show_msg("Trying to detect memory:\n\r");
 
 	boot_info.ram_region_count = 0;
 	for (int i = 0; i < BOOT_RAM_REGION_MAX; i++) {
@@ -57,17 +57,29 @@ static void detect_memory(void) {
 			break;
 		}
 	}
-    show_msg("Success.\r\n");
+    show_msg("Success.\n\r");
 }
+
+// GDT Table
+uint16_t gdt_table[][4] = {
+    {0, 0, 0, 0},
+    {0xFFFF, 0x0000, 0x9A00, 0x00CF},
+    {0xFFFF, 0x0000, 0x9200, 0x00CF},
+};
 
 static void enter_protect_mode(void){
 	cli();
-	
+	uint8_t v = inb(0x92);
+	outb(0x92, v|0x2);
+
+	lgdt((uint32_t)gdt_table, sizeof(gdt_table));
+
 }
 
 
 void loader_entry(void) {
-    show_msg("....Loading....");
+    show_msg("....Loading....\n\r");
     detect_memory();
+	enter_protect_mode();
     for(;;) {}
 }

@@ -31,4 +31,19 @@ static inline void sti(void){
     __asm__ __volatile__("sti");
 }
 
+// lgdt for GDT Table
+static inline void lgdt(uint32_t start, uint32_t size) {
+	struct {
+		uint16_t limit;
+		uint16_t start15_0;
+		uint16_t start31_16;
+	} gdt;
+
+	gdt.start31_16 = start >> 16;
+	gdt.start15_0 = start & 0xFFFF;
+	gdt.limit = size - 1;
+
+	__asm__ __volatile__("lgdt %[g]"::[g]"m"(gdt));
+}
+
 #endif

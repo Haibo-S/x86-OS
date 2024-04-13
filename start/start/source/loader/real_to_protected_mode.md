@@ -34,6 +34,29 @@ out 0x92, al
 
 This sequence manipulates the system's hardware directly, facilitating the transition to protected mode by allowing access to extended memory regions.
 
+## Testing Verification
+To verify the proper function of the clear interrupt instruction in the `enter_protect_mode(void)` function, follow these testing steps:
+
+1. **Set a Breakpoint**:
+   - Set up a breakpoint at the line `cli()` within the function.
+
+2. **Start the Emulator**:
+   - Build the project and press F5 to start QEMU.
+
+3. **Monitor the EFLAGS Register**:
+   - At the breakpoint, open the registers/CPU section in the right side of the gdb debug monitor window. Initially, the `eflags` register should display `0x206`.
+   - Press "Step over" at this breakpoint. After stepping over, the `eflags` register should change to `0x6`, demonstrating the impact of the `cli()` command on the `eflags` register.
+
+4. **Continue Execution**:
+   - Step over subsequent instructions until you reach `lgdt((uint32_t)gdt_table, sizeof(gdt_table));`.
+
+5. **Verify GDT Setup**:
+   - In the QEMU window, go to the top panel, select "View", and choose `compatmonitor()`. A new window will appear.
+   - Type `info registers` to view the register values. Before stepping over `lgdt()`, the GDT register should show `00000000 00000000`.
+   - Step over the `lgdt()` instruction and type `info registers` again. The GDT register should now reflect `000092d4 00000017`, indicating the Global Descriptor Table (GDT) is set up correctly.
+
+
+
 ### References:
 1. https://wiki.osdev.org/Real_Mode
 2. https://wiki.osdev.org/A20_Line
