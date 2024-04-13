@@ -60,6 +60,11 @@ static void detect_memory(void) {
     show_msg("Success.\r\n");
 }
 
+static void enter_protect_mode(void){
+	cli();
+	
+}
+
 
 void loader_entry(void) {
     show_msg("....Loading....");
