@@ -53,8 +53,23 @@ To verify the proper function of the clear interrupt instruction in the `enter_p
 5. **Verify GDT Setup**:
    - In the QEMU window, go to the top panel, select "View", and choose `compatmonitor()`. A new window will appear.
    - Type `info registers` to view the register values. Before stepping over `lgdt()`, the GDT register should show `00000000 00000000`.
-   - Step over the `lgdt()` instruction and type `info registers` again. The GDT register should now reflect `000092d4 00000017`, indicating the Global Descriptor Table (GDT) is set up correctly.
+   - Step over the `lgdt()` instruction and type `info registers` again. In the VS Code debug section, under "Watch", add a new watch expression for '&gdt_table'. The value displayed for the GDT register in QEMU should match the '&gdt_table' value shown in VS Code, confirming that the Global Descriptor Table (GDT) has been set up correctly.
 
+6.  **Verify Jump to Protected Mode Entry**:
+   - To confirm that the system can correctly jump to the `protected_mode_entry` in the `start.S` file, and subsequently to the `load_kernel` function in `loader_32.c`, set a breakpoint at `far_jump(8, (uint32_t)protected_mode_entry);`.
+   - Step through this breakpoint. You should arrive directly at the `load_kernel()` function in `loader_32.c`. If you are unable to reach this function, ensure that the `far_jump` function in `cpu_instr.c` is configured correctly:
+
+     ```c
+     static inline void far_jump(uint32_t selector, uint32_t offset) {
+         uint32_t addr[] = {offset, selector};
+         __asm__ __volatile__("ljmpl *(%[a])"::[a]"r"(addr));
+     }
+     ```
+
+7. **Verify Register Setup for 32-bit Mode**:
+   - To ensure that all the essential x86 registers (ES, CS, SS, DS, FS, GS) are correctly configured for 32-bit operation, set a breakpoint at the `load_kernel()` function within `loader32.c`.
+   - Launch QEMU, navigate to "View" -> "compactmonitor" and type `info registers` to inspect the register states. 
+   - Verify that you see the value `0x00cf9300` for all these registers, specifically `CS32` for the CS register and the same value for DS, ES, SS, FS, and GS registers. This setup indicates that the registers are properly initialized for 32-bit protected mode.
 
 
 ### References:
