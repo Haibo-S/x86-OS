@@ -35,4 +35,38 @@ For each data type or chunk of code, the compiler automatically combines these i
 | 46   | 00008000 | g      |      | .text| ...      | _start       |
 | ...  | ...      | ...    | ...  | ...  | ...                   |
 
+## Linker Script: kernel.lds
 
+The linker script, `kernel.lds`, plays a crucial role in defining where each data type specified in the section headers will begin in memory. The period (`.`) symbol is used within the script to represent the current location counter, which sets the starting address for the next chunk of a section header type.
+
+For instance, in the script below, the line `. = 0x000100000;` dictates where the `.text` section header type will start in the memory address. The actual locations can be verified by building the project and examining the ELF file.
+
+```lds
+SECTIONS {
+    . = 0x000100000;
+
+    .text : {
+        *(.text)
+    } 
+
+    .rodata : {
+        *(.rodata)
+    }
+
+    .data : {
+        *(.data)
+    }
+    .bss : {
+        *(.bss)
+    }
+}
+```
+
+This configuration ensures that the `.text`, `.rodata`, `.data`, and `.bss` segments are placed consecutively in memory, starting at the address specified by the linker script.
+
+Meanwhile in CMakeLists.txt under /kernel:
+```c
+set(CMAKE_EXE_LINKER_FLAGS "-m elf_i386  -T ${PROJECT_SOURCE_DIR}/kernel.lds")
+```
+
+By doing so, we are configuring `kernel.lds` into the project.
