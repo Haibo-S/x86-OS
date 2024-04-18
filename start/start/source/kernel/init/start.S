@@ -1,16 +1,37 @@
+#include "os_cfg.h"
 
-    .text
-    .extern kernel_init
-    .global _start
-    # void start(boot_info_t * boot_info)
+ 	.text
+ 	.global _start
+	.extern kernel_init
+	.extern init_main
 _start:
-    push %ebp
-    mov %esp, %ebp
-    mov 0x8(%ebp), %eax
+    # push %ebp
+    # mov %esp, %ebp
+    # mov 0x8(%ebp), %eax
+    # push %eax
 
     # mov 4(%esp), %eax
+    # push %eax
+
+    push 4(%esp)
 
     # kernel_init(boot_info)
-    push %eax
     call kernel_init
-    jmp .
+
+	jmp $KERNEL_SELECTOR_CS, $gdt_reload
+
+gdt_reload:
+	mov $KERNEL_SELECTOR_DS, %ax	
+	mov %ax, %ds
+    mov %ax, %ss
+    mov %ax, %es
+    mov %ax, %fs
+    mov %ax, %gs
+
+	mov $(stack + KERNEL_STACK_SIZE), %esp
+
+	jmp init_main
+
+	.bss
+.comm stack, KERNEL_STACK_SIZE
+
