@@ -35,3 +35,9 @@ gdt_reload:
 	.bss
 .comm stack, KERNEL_STACK_SIZE
 
+    .text 
+    .global exception_handler_unknown
+exception_handler_unknown:
+    
+    iret
+
