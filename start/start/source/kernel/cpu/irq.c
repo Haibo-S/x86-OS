@@ -103,7 +103,7 @@ static void init_pic(void){
     outb(PIC1_ICW2, IRQ_PIC_START + 8);
     outb(PIC1_ICW3, 2);
     outb(PIC1_ICW4, PIC_ICW4_8086);
-	
+
     outb(PIC0_IMR, 0xFF & ~(1 << 2));
     outb(PIC1_IMR, 0xFF);
 }
@@ -147,4 +147,44 @@ int irq_install(int irq_num, irq_handler_t handler) {
     gate_desc_set(idt_table + irq_num, KERNEL_SELECTOR_CS, (uint32_t) handler,
                   GATE_P_PRESENT | GATE_DPL0 | GATE_TYPE_IDT);
 	return 0;
+}
+
+void irq_enable(int irq_num) {
+    if (irq_num < IRQ_PIC_START) {
+        return;
+    }
+
+    irq_num -= IRQ_PIC_START;
+    if (irq_num < 8) {
+        uint8_t mask = inb(PIC0_IMR) & ~(1 << irq_num);
+        outb(PIC0_IMR, mask);
+    } else {
+        irq_num -= 8;
+        uint8_t mask = inb(PIC1_IMR) & ~(1 << irq_num);
+        outb(PIC1_IMR, mask);
+    }
+}
+
+void irq_disable(int irq_num) {
+    if (irq_num < IRQ_PIC_START) {
+        return;
+    }
+
+    irq_num -= IRQ_PIC_START;
+    if (irq_num < 8) {
+        uint8_t mask = inb(PIC0_IMR) | (1 << irq_num);
+        outb(PIC0_IMR, mask);
+    } else {
+        irq_num -= 8;
+        uint8_t mask = inb(PIC1_IMR) | (1 << irq_num);
+        outb(PIC1_IMR, mask);
+    }
+}
+
+void irq_disable_global(void){
+	cli();
+}
+
+void irq_enable_global(void){
+	sti();
 }
