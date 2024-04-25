@@ -21,6 +21,8 @@
 #define IRQ19_XM            19
 #define IRQ20_VE            20
 
+#define IRQ0_TIMER          0x20
+
 typedef struct _exception_frame_t {
     int gs, fs, es, ds;
     int edi, esi, ebp, esp, ebx, edx, ecx, eax;
@@ -73,11 +75,15 @@ void exception_handler_virtual_exception (void);
 #define PIC_ICW1_ALWAYS_1	(1 << 4)
 #define PIC_ICW4_8086	    (1 << 0)
 
+#define PIC_OCW2_EOI		(1 << 5)
+
 #define IRQ_PIC_START		0x20
 
 void irq_enable(int irq_num);
 void irq_disable(int irq_num);
 void irq_disable_global(void);
 void irq_enable_global(void);
+
+void pic_send_eoi(int irq);
 
 #endif

@@ -6,4 +6,5 @@
 #define KERNEL_SELECTOR_DS		(2 * 8)		
 #define KERNEL_STACK_SIZE       (8*1024)   
 
+#define OS_TICK_MS             10
 #endif //OS_OS_CFG_H
