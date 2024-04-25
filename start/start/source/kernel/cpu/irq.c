@@ -93,6 +93,21 @@ void do_handler_virtual_exception(exception_frame_t * frame) {
 	do_default_handler(frame, "Virtualization Exception.");
 }
 
+static void init_pic(void){
+    outb(PIC0_ICW1, PIC_ICW1_ALWAYS_1 | PIC_ICW1_ICW4);
+    outb(PIC0_ICW2, IRQ_PIC_START);
+    outb(PIC0_ICW3, 1 << 2);
+    outb(PIC0_ICW4, PIC_ICW4_8086);
+
+    outb(PIC1_ICW1, PIC_ICW1_ICW4 | PIC_ICW1_ALWAYS_1);
+    outb(PIC1_ICW2, IRQ_PIC_START + 8);
+    outb(PIC1_ICW3, 2);
+    outb(PIC1_ICW4, PIC_ICW4_8086);
+	
+    outb(PIC0_IMR, 0xFF & ~(1 << 2));
+    outb(PIC1_IMR, 0xFF);
+}
+
 void irq_init(void) {	
 	for (uint32_t i = 0; i < IDT_TABLE_NR; i++) {
     	gate_desc_set(idt_table + i, KERNEL_SELECTOR_CS, (uint32_t) exception_handler_unknown,
@@ -120,6 +135,8 @@ void irq_init(void) {
 	irq_install(IRQ20_VE, exception_handler_virtual_exception);
 
 	lidt((uint32_t)idt_table, sizeof(idt_table));
+
+	init_pic();
 }
 
 int irq_install(int irq_num, irq_handler_t handler) {
