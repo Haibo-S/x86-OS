@@ -71,13 +71,13 @@ void exception_handler_virtual_exception (void);
 #define PIC1_OCW2			0xa0
 #define PIC1_IMR			0xa1
 
-#define PIC_ICW1_ICW4		(1 << 0)
-#define PIC_ICW1_ALWAYS_1	(1 << 4)
-#define PIC_ICW4_8086	    (1 << 0)
+#define PIC_ICW1_ICW4		(1 << 0)		
+#define PIC_ICW1_ALWAYS_1	(1 << 4)		
+#define PIC_ICW4_8086	    (1 << 0)        
 
-#define PIC_OCW2_EOI		(1 << 5)
+#define PIC_OCW2_EOI		(1 << 5)		
 
-#define IRQ_PIC_START		0x20
+#define IRQ_PIC_START		0x20			
 
 void irq_enable(int irq_num);
 void irq_disable(int irq_num);
@@ -85,5 +85,6 @@ void irq_disable_global(void);
 void irq_enable_global(void);
 
 void pic_send_eoi(int irq);
+
 
 #endif

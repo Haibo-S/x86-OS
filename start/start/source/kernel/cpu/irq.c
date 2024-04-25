@@ -139,6 +139,16 @@ void irq_init(void) {
 	init_pic();
 }
 
+void pic_send_eoi(int irq_num) {
+    irq_num -= IRQ_PIC_START;
+
+    if (irq_num >= 8) {
+        outb(PIC1_OCW2, PIC_OCW2_EOI);
+    }
+
+    outb(PIC0_OCW2, PIC_OCW2_EOI);
+}
+
 int irq_install(int irq_num, irq_handler_t handler) {
 	if (irq_num >= IDT_TABLE_NR) {
 		return -1;
@@ -181,10 +191,10 @@ void irq_disable(int irq_num) {
     }
 }
 
-void irq_disable_global(void){
-	cli();
+void irq_disable_global(void) {
+    cli();
 }
 
-void irq_enable_global(void){
-	sti();
+void irq_enable_global(void) {
+    sti();
 }
