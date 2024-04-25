@@ -1,4 +1,7 @@
 {
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
         {
@@ -16,45 +19,47 @@
             "miDebuggerServerAddress": "127.0.0.1:1234",
             "targetArchitecture": "x86",
             "stopAtConnect": true,
-            "serverLaunchTimeout": 30000,
+            // 启动gdb之前，做些准备：写映像文件、启动qemu
             "windows": {
-                "preLaunchTask": "调试准备",
+                "preLaunchTask": "调试准备", // 仅在windows下可自动运行
             },
             "linux": {
-                "preLaunchTask": "调试准备", 
-                "miDebuggerPath": "gdb", 
+                "preLaunchTask": "调试准备", // 仅在windows下可自动运行
+                "miDebuggerPath": "gdb", // linux下的特殊配置
             },
             "customLaunchSetupCommands": [],
             "setupCommands": [
                 {
-                    "description": "gdb print alignment",
+                    "description": "为 gdb 启用整齐打印",
                     "text": "-enable-pretty-printing",
                     "ignoreFailures": true
                 },
                 {
-                    "description": "set disassembly style to Intel",
+                    "description": "将反汇编风格设置为 Intel",
                     "text": "-gdb-set disassembly-flavor intel",
                     "ignoreFailures": true
                 },
+                // 设置体系结构: i8086，方便以16位方式进行反汇编
                 // {
                 //     "description": "设置体系结构",
                 //     "text": "-gdb-set arch i8086",
                 //     "ignoreFailures": true
                 // }
             ],
+            // gdb连接后的设置
             "postRemoteConnectCommands": [
                 {
-                    "description": "loading boot sign files",
+                    "description": "加载boot符号文件",
                     "text": "-file-symbol-file ./build/source/boot/boot.elf",
-                    "ignoreFailures": false
-                },       
-                {
-                    "description": "loading kernel sign files",
-                     "text": "add-symbol-file ./build/source/kernel/kernel.elf 0x10000",
                     "ignoreFailures": false
                 },
                 {
-                    "description": "Loader Filer",
+                    "description": "加载内核符号文件",
+                    "text": "add-symbol-file ./build/source/kernel/kernel.elf 0x10000",
+                    "ignoreFailures": false
+                },
+                {
+                    "description": "加载load符号文件",
                     "text": "add-symbol-file ./build/source/loader/loader.elf 0x8000",
                     "ignoreFailures": false
                 },
