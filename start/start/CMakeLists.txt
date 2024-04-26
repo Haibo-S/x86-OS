@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0.0)
 
 set(CMAKE_VERBOSE_MAKEFILE on)
 # gcc preprocessor
-# For windows or mac, use x86_64-elf-
+# For windows, use x86_64-elf-
 if (CMAKE_HOST_WIN32 OR CMAKE_HOST_APPLE)
     set(TOOL_PREFIX  "x86_64-elf-")
 elseif (CMAKE_HOST_WIN32)
