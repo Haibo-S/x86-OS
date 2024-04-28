@@ -13,6 +13,7 @@
         "loader.h": "c",
         "time.h": "c",
         "cpu_instr.h": "c",
-        "klib.h": "c"
+        "klib.h": "c",
+        "boot_info.h": "c"
     },
 }

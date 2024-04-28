@@ -99,32 +99,90 @@ int kernel_memcmp (void * d1, void * d2, int size) {
 }
 
 // Version: "%s", "1.0.10"
-void kernel_vsprintf(char * buf, const char * fmt, va_list args){
+void kernel_vsprintf(char * buffer, const char * fmt, va_list args) {
     enum {NORMAL, READ_FMT} state = NORMAL;
-    char * curr = buf;
     char ch;
-    while((ch = *fmt++)){
+    char * curr = buffer;
+    while ((ch = *fmt++)) {
         switch (state) {
             case NORMAL:
-                if(ch == '%'){
+                if (ch == '%') {
                     state = READ_FMT;
-                }else{
+                } else {
                     *curr++ = ch;
                 }
                 break;
             case READ_FMT:
-                if(ch == 's'){
+                if (ch == 'd') {
+                    int num = va_arg(args, int);
+                    kernel_itoa(curr, num, 10);
+                    curr += kernel_strlen(curr);
+                } else if (ch == 'x') {
+                    int num = va_arg(args, int);
+                    kernel_itoa(curr, num, 16);
+                    curr += kernel_strlen(curr);
+                } else if (ch == 'c') {
+                    char c = va_arg(args, int);
+                    *curr++ = c;
+                } else if (ch == 's') {
                     const char * str = va_arg(args, char *);
                     int len = kernel_strlen(str);
-                    while(len--){
+                    while (len--) {
                         *curr++ = *str++;
                     }
                 }
-
                 state = NORMAL;
                 break;
-            
         }
     }
-
 }
+
+void kernel_itoa(char * buf, int num, int base) {
+    static const char * num2ch = {"FEDCBA9876543210123456789ABCDEF"};
+    char * p = buf;
+    int old_num = num;
+
+    if ((base != 2) && (base != 8) && (base != 10) && (base != 16)) {
+        *p = '\0';
+        return;
+    }
+
+    int signed_num = 0;
+    if ((num < 0) && (base == 10)) {
+        *p++ = '-';
+        signed_num = 1;
+    }
+
+    if (signed_num) {
+        do {
+            char ch = num2ch[num % base + 15];
+            *p++ = ch;
+            num /= base;
+        } while (num);
+    } else {
+        uint32_t u_num = (uint32_t)num;
+        do {
+            char ch = num2ch[u_num % base + 15];
+            *p++ = ch;
+            u_num /= base;
+        } while (u_num);
+    }
+    *p-- = '\0';
+
+    char * start = (!signed_num) ? buf : buf + 1;
+    while (start < p) {
+        char ch = *start;
+        *start = *p;
+        *p-- = ch;
+        start++;
+    }
+}
+
+void kernel_sprintf(char * buffer, const char * fmt, ...) {
+    va_list args;
+
+    va_start(args, fmt);
+    kernel_vsprintf(buffer, fmt, args);
+    va_end(args);
+}
+
