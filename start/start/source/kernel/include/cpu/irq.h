@@ -57,6 +57,8 @@ void exception_handler_machine_check (void);
 void exception_handler_smd_exception (void);
 void exception_handler_virtual_exception (void);
 
+static void dump_core_regs (exception_frame_t * frame);
+
 #define PIC0_ICW1			0x20
 #define PIC0_ICW2			0x21
 #define PIC0_ICW3			0x21
