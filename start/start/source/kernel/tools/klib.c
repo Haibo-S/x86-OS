@@ -1,5 +1,6 @@
 #include "tools/klib.h"
-
+#include "tools/log.h"
+#include "comm/cpu_instr.h"
 
 void kernel_strcpy (char * dest, const char * src) {
     if (!dest || !src) {
@@ -186,3 +187,11 @@ void kernel_sprintf(char * buffer, const char * fmt, ...) {
     va_end(args);
 }
 
+void panic (const char * file, int line, const char * func, const char * cond) {
+    log_printf("assert failed! %s", cond);
+    log_printf("file: %s\nline %d\nfunc: %s\n", file, line, func);
+
+    for (;;) {
+        hlt();
+    }
+}

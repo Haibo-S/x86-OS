@@ -15,4 +15,12 @@ void kernel_vsprintf(char * buf, const char * fmt, va_list args);
 void kernel_sprintf(char * buf, const char * fmt, ...);
 void kernel_itoa(char * buf, int num, int base);
 
+#ifndef RELEASE
+#define ASSERT(condition)    \
+    if (!(condition)) panic(__FILE__, __LINE__, __func__, #condition)
+void panic (const char * file, int line, const char * func, const char * cond);
+#else
+#define ASSERT(condition)    ((void)0)
+#endif
+
 #endif

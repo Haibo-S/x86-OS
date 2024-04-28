@@ -5,8 +5,11 @@
 #include "dev/time.h"
 #include "tools/log.h"
 #include "os_cfg.h"
+#include "tools/klib.h"
 
 void kernel_init (boot_info_t * boot_info) {
+    ASSERT(boot_info->ram_region_count != 0);
+    ASSERT(3 < 2);
     cpu_init();
     log_init();
     irq_init();
