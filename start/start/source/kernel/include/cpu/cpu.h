@@ -3,6 +3,9 @@
 
 #include "comm/types.h"
 
+#define EFLAGS_DEFAULT		(1 << 1)
+#define EFLAGS_IF			(1 << 9)
+
 #define SEG_G				(1 << 15)		
 #define SEG_D				(1 << 14)		
 #define SEG_P_PRESENT	    (1 << 7)		

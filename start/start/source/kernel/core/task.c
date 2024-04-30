@@ -1,7 +1,19 @@
+#include "comm/cpu_instr.h"
 #include "core/task.h"
 #include "tools/klib.h"
+#include "os_cfg.h"
 
 static int tss_init(task_t* task, uint32_t entry, uint32_t esp){
+    kernel_memset(&task->tss, 0, sizeof(tss_t));
+    task->tss.eip = entry;
+    task->tss.esp = task->tss.esp0 = esp;
+    task->tss.ss0 = KERNEL_SELECTOR_DS;
+    task->tss.eip = entry;
+    task->tss.eflags = EFLAGS_DEFAULT | EFLAGS_IF;
+    task->tss.es = task->tss.ss = task->tss.ds 
+            = task->tss.fs = task->tss.gs = KERNEL_SELECTOR_DS;   
+    task->tss.cs = KERNEL_SELECTOR_CS;    
+    task->tss.iomap = 0;
     return 0;
 }
 
