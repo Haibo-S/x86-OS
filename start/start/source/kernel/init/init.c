@@ -1,5 +1,6 @@
 #include "init.h"
 #include "comm/boot_info.h"
+#include "comm/cpu_instr.h"
 #include "cpu/cpu.h"
 #include "cpu/irq.h"
 #include "dev/time.h"
@@ -33,6 +34,7 @@ void init_main(void){
 
     task_init(&init_task, (uint32_t)init_task_entry, (uint32_t)&init_task_stack[1024]);
     task_init(&first_task, 0, 0);
+    write_tr(first_task.tss_sel);
     
     int count = 0;
     for(;;){
