@@ -5,23 +5,14 @@
 	.extern kernel_init
 	.extern init_main
 _start:
-    # push %ebp
-    # mov %esp, %ebp
-    # mov 0x8(%ebp), %eax
-    # push %eax
-
-    # mov 4(%esp), %eax
-    # push %eax
-
     push 4(%esp)
 
-    # kernel_init(boot_info)
     call kernel_init
 
 	jmp $KERNEL_SELECTOR_CS, $gdt_reload
 
 gdt_reload:
-	mov $KERNEL_SELECTOR_DS, %ax	
+	mov $KERNEL_SELECTOR_DS, %ax		
 	mov %ax, %ds
     mov %ax, %ss
     mov %ax, %es
@@ -33,9 +24,9 @@ gdt_reload:
 	jmp init_main
 
 	.bss
-.comm stack, KERNEL_STACK_SIZE
+.comm stack, KERNEL_STACK_SIZE   
 
-.text
+   .text
 .macro exception_handler name num with_error_code
 	    .extern do_handler_\name
 		.global exception_handler_\name

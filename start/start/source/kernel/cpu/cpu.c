@@ -59,6 +59,6 @@ void cpu_init (void) {
     init_gdt();
 }
 
-void switch_to_tss(int tss_sel){
-	far_jump(tss_sel, 0);
+void switch_to_tss (uint32_t tss_selector) {
+    far_jump(tss_selector, 0);
 }
