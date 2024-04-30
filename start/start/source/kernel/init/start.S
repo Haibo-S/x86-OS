@@ -79,3 +79,23 @@ exception_handler smd_exception, 19, 0
 exception_handler virtual_exception, 20, 0
 
 exception_handler timer, 0x20, 0
+
+.text
+	.global simple_switch
+simple_switch:
+	movl 4(%esp), %eax   
+	movl 8(%esp), %edx   
+
+	push %ebp
+	push %ebx
+	push %esi
+	push %edi
+
+	mov %esp, (%eax)    
+  	mov %edx, %esp      
+
+	pop %edi
+	pop %esi
+	pop %ebx
+	pop %ebp
+  	ret
