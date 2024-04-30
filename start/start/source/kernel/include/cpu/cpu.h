@@ -23,6 +23,8 @@
 #define GATE_DPL0			(0 << 13)		
 #define GATE_DPL3			(3 << 13)	
 
+#pragma pack(1)
+
 typedef struct _tss_t {
     uint32_t pre_link;
     uint32_t esp0, ss0, esp1, ss1, esp2, ss2;
@@ -32,8 +34,6 @@ typedef struct _tss_t {
     uint32_t ldt;
     uint32_t iomap;
 }tss_t;
-
-#pragma pack(1)
 
 typedef struct _segment_desc_t {
 	uint16_t limit15_0;
@@ -49,6 +49,7 @@ typedef struct _gate_desc_t {
 	uint16_t attr;
 	uint16_t offset31_16;
 }gate_desc_t;
+
 #pragma pack()
 
 void cpu_init (void);
