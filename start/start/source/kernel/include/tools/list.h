@@ -4,18 +4,15 @@
 #define offset_in_parent(parent_type, node_name)    \
     ((uint32_t)&(((parent_type*)0)->node_name))
 
-
 #define offset_to_parent(node, parent_type, node_name)   \
     ((uint32_t)node - offset_in_parent(parent_type, node_name))
-
 
 #define list_node_parent(node, parent_type, node_name)   \
         ((parent_type *)(node ? offset_to_parent((node), parent_type, node_name) : 0))
 
-
 typedef struct _list_node_t {
-    struct _list_node_t* pre;     
-    struct _list_node_t* next;      
+    struct _list_node_t* pre;
+    struct _list_node_t* next;
 }list_node_t;
 
 static inline void list_node_init(list_node_t *node) {
@@ -31,9 +28,9 @@ static inline list_node_t * list_node_next(list_node_t *node) {
 }
 
 typedef struct _list_t {
-    list_node_t * first;    
-    list_node_t * last;          
-    int count;                     
+    list_node_t * first;
+    list_node_t * last;
+    int count;
 }list_t;
 
 void list_init(list_t *list);

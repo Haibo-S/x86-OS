@@ -4,5 +4,4 @@
 void log_init (void);
 void log_printf(const char * fmt, ...);
 
-
-#endif
+#endif // LOG_H

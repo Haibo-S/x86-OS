@@ -4,6 +4,17 @@
 #include <stdarg.h>
 #include "comm/types.h"
 
+static inline uint32_t up2 (uint32_t size, uint32_t bound) {
+    return (size + bound - 1) & ~(bound - 1);
+}
+
+static inline uint32_t down2 (uint32_t size, uint32_t bound) {
+    return size & ~(bound - 1);
+}
+
+int strings_count (char ** start);
+char * get_file_name (char * name);
+
 void kernel_strcpy (char * dest, const char * src);
 void kernel_strncpy(char * dest, const char * src, int size);
 int kernel_strncmp (const char * s1, const char * s2, int size);
@@ -23,4 +34,4 @@ void panic (const char * file, int line, const char * func, const char * cond);
 #define ASSERT(condition)    ((void)0)
 #endif
 
-#endif
+#endif //KLIB_H

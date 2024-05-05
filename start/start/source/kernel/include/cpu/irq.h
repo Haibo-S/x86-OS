@@ -1,6 +1,8 @@
 #ifndef IRQ_H
 #define IRQ_H
 
+#include "comm/types.h"
+
 #define IRQ0_DE             0
 #define IRQ1_DB             1
 #define IRQ2_NMI            2
@@ -22,6 +24,15 @@
 #define IRQ20_VE            20
 
 #define IRQ0_TIMER          0x20
+#define IRQ1_KEYBOARD		0x21				
+#define IRQ14_HARDDISK_PRIMARY		0x2E		
+
+#define ERR_PAGE_P          (1 << 0)
+#define ERR_PAGE_WR          (1 << 1)
+#define ERR_PAGE_US          (1 << 1)
+
+#define ERR_EXT             (1 << 0)
+#define ERR_IDT             (1 << 1)
 
 typedef struct _exception_frame_t {
     int gs, fs, es, ds;
@@ -29,6 +40,7 @@ typedef struct _exception_frame_t {
     int num;
     int error_code;
     int eip, cs, eflags;
+    int esp3, ss3;
 }exception_frame_t;
 
 typedef void(*irq_handler_t)(void);
@@ -57,8 +69,6 @@ void exception_handler_machine_check (void);
 void exception_handler_smd_exception (void);
 void exception_handler_virtual_exception (void);
 
-static void dump_core_regs (exception_frame_t * frame);
-
 #define PIC0_ICW1			0x20
 #define PIC0_ICW2			0x21
 #define PIC0_ICW3			0x21
@@ -75,7 +85,7 @@ static void dump_core_regs (exception_frame_t * frame);
 
 #define PIC_ICW1_ICW4		(1 << 0)		
 #define PIC_ICW1_ALWAYS_1	(1 << 4)		
-#define PIC_ICW4_8086	    (1 << 0)        
+#define PIC_ICW4_8086	    (1 << 0)       
 
 #define PIC_OCW2_EOI		(1 << 5)		
 
@@ -85,6 +95,9 @@ void irq_enable(int irq_num);
 void irq_disable(int irq_num);
 void irq_disable_global(void);
 void irq_enable_global(void);
+typedef uint32_t irq_state_t;
+irq_state_t irq_enter_protection (void);
+void irq_leave_protection (irq_state_t state);
 
 void pic_send_eoi(int irq);
 
