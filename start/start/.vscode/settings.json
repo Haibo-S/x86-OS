@@ -1,5 +1,4 @@
 {
-
     "cmake.generator": "Unix Makefiles",
     "cmake.configureOnOpen": false,
     "cmake.sourceDirectory": "${workspaceFolder}/.",
@@ -21,5 +20,4 @@
         "os_cfg.h": "c",
         "log.h": "c"
     },
-    
 }
