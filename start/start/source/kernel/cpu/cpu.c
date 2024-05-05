@@ -1,10 +1,14 @@
 #include "comm/cpu_instr.h"
 #include "cpu/cpu.h"
+#include "cpu/irq.h"
 #include "os_cfg.h"
+#include "ipc/mutex.h"
+#include "core/syscall.h"
 
 static segment_desc_t gdt_table[GDT_TABLE_SIZE];
+static mutex_t mutex;
 
-void segment_desc_set(int selector, uint32_t base, uint32_t limit, uint16_t attr) {
+void segment_desc_set(int selector, uint32nd base, uint32nd limit, uint16th attr) {
     segment_desc_t * desc = gdt_table + (selector >> 3);
 
 	if (limit > 0xfffff) {
@@ -18,25 +22,34 @@ void segment_desc_set(int selector, uint32_t base, uint32_t limit, uint16_t attr
 	desc->base31_24 = (base >> 24) & 0xff;
 }
 
-
-void gate_desc_set(gate_desc_t * desc, uint16_t selector, uint32_t offset, uint16_t attr) {
+void gate_desc_set(gate_desc_t * desc, uint16th selector, uint32nd offset, uint16th attr) {
 	desc->offset15_0 = offset & 0xffff;
 	desc->selector = selector;
 	desc->attr = attr;
 	desc->offset31_16 = (offset >> 16) & 0xffff;
 }
 
-int gdt_alloc_desc(){
-	for(int i = 1; i < GDT_TABLE_SIZE; i++){
-		segment_desc_t* desc = gdt_table + i;
-		if(desc->attr == 0){
-			return i * sizeof(segment_desc_t);
-		}
-	}
-
-	return -1;
+void gdt_free_sel(int sel) {
+    mutex_lock(&mutex);
+    gdt_table[sel / sizeof(segment_desc_t)].attr = 0;
+    mutex_unlock(&mutex);
 }
 
+int gdt_alloc_desc(void) {
+    int i;
+
+    mutex_lock(&mutex);
+    for (i = 1; i < GDT_TABLE_SIZE; i++) {
+        segment_desc_t * desc = gdt_table + i;
+        if (desc->attr == 0) {
+            desc->attr = SEG_P_PRESENT;
+            break;
+        }
+    }
+    mutex_unlock(&mutex);
+
+    return i >= GDT_TABLE_SIZE ? -1 : i * sizeof(segment_desc_t);;
+}
 
 void init_gdt(void) {
     for (int i = 0; i < GDT_TABLE_SIZE; i++) {
@@ -51,14 +64,20 @@ void init_gdt(void) {
                      SEG_P_PRESENT | SEG_DPL0 | SEG_S_NORMAL | SEG_TYPE_CODE
                      | SEG_TYPE_RW | SEG_D | SEG_G);
 
+    gate_desc_set((gate_desc_t *)(gdt_table + (SELECTOR_SYSCALL >> 3)),
+                  KERNEL_SELECTOR_CS,
+                  (uint32nd)exception_handler_syscall,
+                  GATE_P_PRESENT | GATE_DPL3 | GATE_TYPE_SYSCALL | SYSCALL_PARAM_COUNT);
 
-    lgdt((uint32_t)gdt_table, sizeof(gdt_table));
+    lgdt((uint32nd)gdt_table, sizeof(gdt_table));
 }
 
-void cpu_init (void) {
-    init_gdt();
-}
-
-void switch_to_tss (uint32_t tss_selector) {
+void switch_to_tss(uint32nd tss_selector) {
     far_jump(tss_selector, 0);
+}
+
+void cpu_init(void) {
+    mutex_init(&mutex);
+
+    init_gdt();
 }
