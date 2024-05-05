@@ -62,21 +62,21 @@
                 //     "text": "add-symbol-file ./build/source/boot/boot.elf 0x7c00",
                 //     "ignoreFailures": false
                 // },
-                // {
-                //     "description": "load init symbol file",
-                //     "text": "add-symbol-file ./build/source/init/init.elf 0x82000000",
-                //     "ignoreFailures": false
-                // },
-                // {
-                //     "description": "load shell symbol file",
-                //     "text": "add-symbol-file ./build/source/shell/shell.elf 0x81000000",
-                //     "ignoreFailures": false
-                // },
-                // {
-                //     "description": "load loop symbol file",
-                //     "text": "add-symbol-file ./build/source/loop/loop.elf 0x83000000",
-                //     "ignoreFailures": false
-                // },
+                {
+                    "description": "load init symbol file",
+                    "text": "add-symbol-file ./build/source/init/init.elf 0x82000000",
+                    "ignoreFailures": false
+                },
+                {
+                    "description": "load shell symbol file",
+                    "text": "add-symbol-file ./build/source/shell/shell.elf 0x81000000",
+                    "ignoreFailures": false
+                },
+                {
+                    "description": "load loop symbol file",
+                    "text": "add-symbol-file ./build/source/loop/loop.elf 0x83000000",
+                    "ignoreFailures": false
+                },
                 {
                     "description": "execute until 0x7c00",
                     "text": "-exec-until *0x7c00",
